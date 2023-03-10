@@ -1,26 +1,58 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
+const messageList = ref([])
+
+window.addEventListener('message', (event: MessageEvent) => {
+  console.log('iframe消息', event.data);
+  messageList.value.push(event.data)
+
+
+}, false)
+
+const sendMessage = () => {
+  window.parent.postMessage(new Date().getTime(), 'http://localhost:8000/cms/decorate')
+} 
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="container">
+    <div class="m-wrapper">
+      <button @click="sendMessage">
+        发送
+      </button>
+      <ul>
+        <li v-for="(message, index) in messageList" :key="index">
+          {{ message.value }}</li>
+      </ul>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
     </div>
-  </header>
 
-  <RouterView />
+  </div>
 </template>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f7f7f7;
+}
+
+.m-wrapper {
+  background: #fff;
+  width: 375px;
+  height: 750px;
+  border: 1px solid #eee;
+  overflow: auto;
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;
